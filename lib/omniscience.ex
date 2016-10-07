@@ -1,0 +1,3 @@
+defmodule Omniscience do
+  
+end
