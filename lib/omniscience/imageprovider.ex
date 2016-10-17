@@ -70,8 +70,10 @@ defmodule Omniscience.ImageProvider do
     end
   end
 
-  def get_url(name) do    
-    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/^#{name}$/]"    
+  def get_url(name) do
+    IO.puts "searching #{name}"
+    encoded = String.replace(name, " ", "\\s")
+    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/^#{encoded}$/]"    
     %{headers: headers} = HTTPoison.get!(url)
     
     loc_header = Enum.find headers, fn({key, _}) -> key == "Location" end
@@ -80,9 +82,23 @@ defmodule Omniscience.ImageProvider do
 		 {_, h} -> h
 		 _ -> nil
 	       end
-    
-    mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")    
-    "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"
+    if location == nil do
+      IO.inspect headers
+      nil
+    else
+      mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")    
+      "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"
+    end
   end
 end
+
+
+
+
+
+
+
+
+
+
 
