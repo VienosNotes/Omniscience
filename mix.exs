@@ -27,8 +27,11 @@ defmodule Omniscience.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:slack, "~> 0.7.1"},
-     {:websocket_client, git: "https://github.com/jeremyong/websocket_client"},
-     {:poison, "~> 3.0"}]
+    [
+      {:slack, "~> 0.7.1"},
+      {:websocket_client, git: "https://github.com/jeremyong/websocket_client"},
+      {:poison, "~> 1.0"},
+      {:httpoison, "~> 0.9.0"}
+    ]
   end
 end
