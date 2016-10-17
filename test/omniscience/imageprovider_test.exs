@@ -1,9 +1,9 @@
 defmodule ImageProviderTest do  
   use ExUnit.Case
   doctest Omniscience.ImageProvider
-  
-  test "parsing card list" do
-     sample_input = """
+
+  def sample_input do
+    """
 　英語名：Accomplished Automaton
 日本語名：成し遂げた自動機械（なしとげたじどうきかい）
 　コスト：(７)
@@ -36,7 +36,9 @@ defmodule ImageProviderTest do
 　セット：Kaladesh
 　稀少度：アンコモン
 """
-
+  end
+  
+  test "parsing card list" do
     result = Omniscience.ImageProvider.parse_list(sample_input)
     expect = [
       {"Accomplished Automaton", "成し遂げた自動機械"},
@@ -44,5 +46,32 @@ defmodule ImageProviderTest do
       {"Aerial Responder", "空中対応員"}
     ]
     assert result == expect
+  end
+
+  test "lookup and normalize the name of the card" do
+    name_map = Omniscience.ImageProvider.parse_list(sample_input)
+    assert Omniscience.ImageProvider.normalize_lang("Accomplished Automaton", name_map) == {:ok, "Accomplished Automaton"}
+    assert Omniscience.ImageProvider.normalize_lang("成し遂げた自動機械", name_map) == {:ok, "Accomplished Automaton"}
+    assert  {:error, _} = Omniscience.ImageProvider.normalize_lang("稲妻", name_map)
+  end
+
+  test "create url of image from given card name" do
+    name = "Mountain"
+    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"
+    assert Omniscience.ImageProvider.get_url(name) == expect
+  end
+
+  test "load definitions from source and search cards" do
+    provider = Omniscience.ImageProvider.get_provider(:onmemory)
+    name = "Mountain"
+    jpname = "山"
+    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"
+    assert apply(provider, [name]) == expect
+    assert apply(provider, [jpname]) == expect    
+  end
+
+  test "load whisper source" do
+    loaded  = Omniscience.ImageProvider.whisper()
+    assert is_binary(loaded)
   end
 end
