@@ -87,6 +87,10 @@ defmodule ImageProviderTest do
     assert apply(provider, [name]) == expect
     assert apply(provider, [lower]) == expect
     assert apply(provider, [jpname]) == expect
-    assert apply(provider, [aether]) == expect 
+    assert apply(provider, [aether]) == expect
+
+    name = "Aetherstorm Roc"
+    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417576&type=card"
+    assert apply(provider, [name]) == expect    
   end
 end
