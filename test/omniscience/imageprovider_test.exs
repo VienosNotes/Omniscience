@@ -76,4 +76,17 @@ defmodule ImageProviderTest do
     loaded  = Omniscience.ImageProvider.whisper()
     assert is_binary(loaded)
   end
+
+  test "handling AEther" do
+    provider = Omniscience.ImageProvider.get_provider(:onmemory)
+    name = "Ætherling"
+    lower = "ætherling"
+    jpname = "霊異種"
+    aether = "Aetherling"
+    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=368961&type=card"
+    assert apply(provider, [name]) == expect
+    assert apply(provider, [lower]) == expect
+    assert apply(provider, [jpname]) == expect
+    assert apply(provider, [aether]) == expect 
+  end
 end
