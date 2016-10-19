@@ -18,9 +18,16 @@ defmodule Omniscience do
     prov = Agent.get(:provider, fn prov -> prov end)
     receiver = Agent.get(:receiver, fn r -> r end)
 
-    Enum.map(parse_message(message), fn(name) ->
-      spawn(fn -> send receiver, {:ok, apply(prov, [name]), name, message, slack} end)
-    end)    
+    parse_message(message)
+    |> Enum.reverse
+    |> Enum.map(fn(name) ->
+      spawn(fn ->
+	case apply(prov, [name]) do
+	  {:ok, url} -> send receiver, {:ok, "#{name}: #{url}", message, slack}
+	  {:error, reason} -> send receiver, {:ok, "Fail to search: #{reason}", message, slack }
+	end
+      end)    
+    end)
   end
   def handle_message(_,_), do: :ok
 
@@ -32,8 +39,8 @@ defmodule Omniscience do
 
   def post_url do
     receive do
-      {:ok, url, orig, message, slack} ->
-	send_message("#{orig}: #{url}", message.channel, slack)
+      {:ok, content, message, slack} ->
+	send_message(content, message.channel, slack)
 	post_url
     end
   end

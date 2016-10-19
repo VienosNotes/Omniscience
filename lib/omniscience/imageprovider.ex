@@ -9,8 +9,10 @@ defmodule Omniscience.ImageProvider do
   def get_provider(:onmemory) do
     name_map = parse_list(whisper())
     fn(name) ->
-      {:ok, normalized} = normalize_lang(name, name_map)
-      get_url normalized
+      case normalize_lang(name, name_map) do
+	{:ok, normalized} -> get_url normalized
+	{:error, reason} -> {:error, reason}
+      end
     end      
   end
 
@@ -95,12 +97,13 @@ defmodule Omniscience.ImageProvider do
 		 {_, h} -> h
 		 _ -> nil
 	       end
+    
     if location == nil do
       IO.inspect headers
-      nil
+      {:error, "something is wrong"}
     else
       mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")    
-      "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"
+      {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"}
     end
   end
 end
