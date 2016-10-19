@@ -80,8 +80,14 @@ defmodule Omniscience.ImageProvider do
   def get_url(name) do
     IO.puts "searching #{name}"
     encoded = String.replace(name, " ", "\\s")
-    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/^#{encoded}$/]"    
-    %{headers: headers} = HTTPoison.get!(url)
+    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/^#{encoded}$/]"
+    result = HTTPoison.get(url)
+
+    # retry only one time
+    %{headers: headers} = case result do
+      {:ok, res} -> res
+      _ -> HTTPoison.get!(url)
+    end
     
     loc_header = Enum.find headers, fn({key, _}) -> key == "Location" end
     
