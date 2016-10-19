@@ -23,9 +23,9 @@ defmodule Omniscience.ImageProvider do
     Enum.map(cards,
       fn(c) -> lines = String.split(c, "\n")
 	{
-	  Omniscience.EnumEx.firstp(lines, fn(line) -> String.starts_with?(line, "　英語名：") end)
+	  Enum.find(lines, fn(line) -> String.starts_with?(line, "　英語名：") end)
 	  |> format_eng,
-	  Omniscience.EnumEx.firstp(lines, fn(line) -> String.starts_with?(line, "日本語名：") end)
+	  Enum.find(lines, fn(line) -> String.starts_with?(line, "日本語名：") end)
 	  |> format_jpn
 	}	       
       end)      
@@ -60,7 +60,7 @@ defmodule Omniscience.ImageProvider do
   def normalize_lang(name, name_map) do
     lower = String.downcase name
     ae = lower |> String.downcase |> String.replace("ae", "æ")
-    match = Omniscience.EnumEx.firstp(name_map, fn(n) ->
+    match = Enum.find(name_map, fn(n) ->
       case n do
 	{^lower, _} -> n
 	{_, ^lower} -> n
