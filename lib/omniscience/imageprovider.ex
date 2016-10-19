@@ -81,7 +81,7 @@ defmodule Omniscience.ImageProvider do
 
   def get_url(name) do
     IO.puts "searching #{name}"
-    encoded = String.replace(name, " ", "\\s")
+    encoded = encode name
     url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?special=true&name=+[m/^#{encoded}$/]"
     result = HTTPoison.get(url)
 
@@ -105,6 +105,12 @@ defmodule Omniscience.ImageProvider do
       mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")    
       {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"}
     end
+  end
+
+  def encode(name) do
+    name
+    |> String.replace(" ", "\\s")
+    |> String.replace("?", "\\?")
   end
 end
 

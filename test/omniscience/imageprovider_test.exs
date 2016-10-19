@@ -93,4 +93,11 @@ defmodule ImageProviderTest do
     expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417576&type=card"}
     assert apply(provider, [name]) == expect    
   end
+
+  test "handling question?" do
+    provider = Omniscience.ImageProvider.get_provider(:onmemory)
+    name = "誰が一番明るく燃えるであろう？"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=212605&type=card"}
+    assert apply(provider, [name]) == expect        
+  end
 end
