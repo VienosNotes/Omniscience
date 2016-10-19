@@ -57,7 +57,7 @@ defmodule ImageProviderTest do
 
   test "create url of image from given card name" do
     name = "Mountain"
-    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"}
     assert Omniscience.ImageProvider.get_url(name) == expect
   end
 
@@ -66,7 +66,7 @@ defmodule ImageProviderTest do
     name = "Mountain"
     lower = "mountain"
     jpname = "山"
-    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"}
     assert apply(provider, [name]) == expect
     assert apply(provider, [lower]) == expect
     assert apply(provider, [jpname]) == expect    
@@ -83,14 +83,14 @@ defmodule ImageProviderTest do
     lower = "ætherling"
     jpname = "霊異種"
     aether = "Aetherling"
-    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=368961&type=card"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=368961&type=card"}
     assert apply(provider, [name]) == expect
     assert apply(provider, [lower]) == expect
     assert apply(provider, [jpname]) == expect
     assert apply(provider, [aether]) == expect
 
     name = "Aetherstorm Roc"
-    expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417576&type=card"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417576&type=card"}
     assert apply(provider, [name]) == expect    
   end
 end
