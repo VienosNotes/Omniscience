@@ -9,17 +9,18 @@ defmodule Omniscience do
   end
 
   def start_agent(provider) do
-    {:ok, pid} = Agent.start_link(fn -> provider end, name: __MODULE__)
+    {:ok, pid} = Agent.start_link(fn -> provider end, name: :provider)
+    {:ok, _} = Agent.start_link(fn -> spawn &post_url/0 end, name: :receiver)
     pid
   end
 
   def handle_message(message = %{type: "message"}, slack) do
-    prov = Agent.get(__MODULE__, fn prov -> prov end)
-    spawn fn ->
-      Enum.map(parse_message(message), fn name -> apply(prov, [name]) end)
-      |> List.foldl("", fn(name, acc) -> acc <> "\n" <> name end)
-      |> send_message(message.channel, slack)
-    end
+    prov = Agent.get(:provider, fn prov -> prov end)
+    receiver = Agent.get(:receiver, fn r -> r end)
+
+    Enum.map(parse_message(message), fn(name) ->
+      spawn(fn -> send receiver, {:ok, apply(prov, [name]), name, message, slack} end)
+    end)    
   end
   def handle_message(_,_), do: :ok
 
@@ -27,7 +28,15 @@ defmodule Omniscience do
     Regex.scan(~r/《(.+?)》/, text)
     |> Enum.map(fn([_,name]) -> name end)
   end
-  def parse_message(_), do: []  
+  def parse_message(_), do: []
+
+  def post_url do
+    receive do
+      {:ok, url, orig, message, slack} ->
+	send_message("#{orig}: #{url}", message.channel, slack)
+	post_url
+    end
+  end
 end
 
 
