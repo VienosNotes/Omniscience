@@ -82,7 +82,7 @@ defmodule Omniscience.ImageProvider do
   def get_url(name) do
     IO.puts "searching #{name}"
     encoded = String.replace(name, " ", "\\s")
-    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/^#{encoded}$/]"
+    url = "http://gatherer.wizards.com/Pages/Search/Default.aspx?special=true&name=+[m/^#{encoded}$/]"
     result = HTTPoison.get(url)
 
     # retry only one time
