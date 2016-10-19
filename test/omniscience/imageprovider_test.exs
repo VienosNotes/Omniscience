@@ -41,17 +41,17 @@ defmodule ImageProviderTest do
   test "parsing card list" do
     result = Omniscience.ImageProvider.parse_list(sample_input)
     expect = [
-      {"Accomplished Automaton", "成し遂げた自動機械"},
-      {"Acrobatic Maneuver", "軽業の妙技"},
-      {"Aerial Responder", "空中対応員"}
+      {"accomplished automaton", "成し遂げた自動機械"},
+      {"acrobatic maneuver", "軽業の妙技"},
+      {"aerial responder", "空中対応員"}
     ]
     assert result == expect
   end
 
   test "lookup and normalize the name of the card" do
     name_map = Omniscience.ImageProvider.parse_list(sample_input)
-    assert Omniscience.ImageProvider.normalize_lang("Accomplished Automaton", name_map) == {:ok, "Accomplished Automaton"}
-    assert Omniscience.ImageProvider.normalize_lang("成し遂げた自動機械", name_map) == {:ok, "Accomplished Automaton"}
+    assert Omniscience.ImageProvider.normalize_lang("Accomplished Automaton", name_map) == {:ok, "accomplished automaton"}
+    assert Omniscience.ImageProvider.normalize_lang("成し遂げた自動機械", name_map) == {:ok, "accomplished automaton"}
     assert  {:error, _} = Omniscience.ImageProvider.normalize_lang("稲妻", name_map)
   end
 
@@ -64,9 +64,11 @@ defmodule ImageProviderTest do
   test "load definitions from source and search cards" do
     provider = Omniscience.ImageProvider.get_provider(:onmemory)
     name = "Mountain"
+    lower = "mountain"
     jpname = "山"
     expect = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=417834&type=card"
     assert apply(provider, [name]) == expect
+    assert apply(provider, [lower]) == expect
     assert apply(provider, [jpname]) == expect    
   end
 

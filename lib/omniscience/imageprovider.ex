@@ -34,7 +34,7 @@ defmodule Omniscience.ImageProvider do
   def format_eng(eng) do
     case eng do
       nil -> nil
-      _ -> String.replace_prefix(eng, "　英語名：", "")
+      _ -> String.replace_prefix(eng, "　英語名：", "") |> String.downcase
     end
   end
 
@@ -56,10 +56,11 @@ defmodule Omniscience.ImageProvider do
   end
 
   def normalize_lang(name, name_map) do
+    lower = String.downcase name
     match = Omniscience.EnumEx.firstp(name_map, fn(n) ->
       case n do
-	{^name, _} -> n
-	{_, ^name} -> n
+	{^lower, _} -> n
+	{_, ^lower} -> n
 	_ -> nil
       end
     end)
