@@ -100,4 +100,23 @@ defmodule ImageProviderTest do
     expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=212605&type=card"}
     assert apply(provider, [name]) == expect        
   end
+
+  test "handling dual-named card" do
+    provider = Omniscience.ImageProvider.get_provider(:onmemory)
+    name1 = "点火"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=369080&type=card"}
+    assert apply(provider, [name1]) == expect
+
+    name2 = "昆虫の逸脱者"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=226755&type=card"}
+    assert apply(provider, [name2]) == expect
+
+    name3 = "悪夢の声、ブリセラ"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=414305&type=card"}
+    assert apply(provider, [name3]) == expect
+
+    name4 = "エラヨウの本質"
+    expect = {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=87599&type=card"}
+    assert apply(provider, [name4]) == expect
+  end
 end

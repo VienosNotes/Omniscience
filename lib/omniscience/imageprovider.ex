@@ -1,4 +1,8 @@
 defmodule Omniscience.ImageProvider do
+  @moduledoc"""
+  カード名からカード画像のURLを生成するプロバイダを生成するためのモジュールです。
+  """
+
   def whisper() do
     case File.read "whisper.txt" do
       {:ok, raw} -> raw
@@ -22,15 +26,22 @@ defmodule Omniscience.ImageProvider do
   
   def parse_list(raw) do
     cards = String.replace(raw, "\r", "") |> String.split("\n\n")
-    Enum.map(cards,
-      fn(c) -> lines = String.split(c, "\n")
-	{
-	  Enum.find(lines, fn(line) -> String.starts_with?(line, "　英語名：") end)
-	  |> format_eng,
-	  Enum.find(lines, fn(line) -> String.starts_with?(line, "日本語名：") end)
-	  |> format_jpn
-	}	       
-      end)      
+    Enum.flat_map(cards,
+      fn(c) ->
+	if Enum.count(Regex.scan(~r/英語名/, c)) > 1 do
+	  c
+	  |> String.replace("　英語名：",  "\n\n　英語名：")
+	  |> parse_list
+	else
+	  lines = String.split(c, "\n")	
+	  [{
+	    Enum.find(lines, fn(line) -> String.starts_with?(line, "　英語名：") end)
+	    |> format_eng,
+	    Enum.find(lines, fn(line) -> String.starts_with?(line, "日本語名：") end)
+	    |> format_jpn
+	  }]	       
+	end
+      end)
   end
 
   def format_eng(eng) do
