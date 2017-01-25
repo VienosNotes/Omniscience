@@ -113,8 +113,12 @@ defmodule Omniscience.ImageProvider do
       IO.inspect headers
       {:error, "something is wrong"}
     else
-      mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")    
-      {:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"}
+      mvid = Regex.replace(~r(/Pages/Card/Details.aspx\?multiverseid=), location, "")
+      if Integer.parse(mvid) == :error do
+	{:error, "mvid fetch failed"}
+      else
+	{:ok, "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=#{mvid}&type=card"}
+      end
     end
   end
 
